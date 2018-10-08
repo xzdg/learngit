@@ -1,0 +1,274 @@
+package test;
+import java.util.*;
+import org.apache.log4j.Logger;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+/**
+ * Unit类是角色类（单位类）
+ * 每个角色拥有攻击力和生命值（ad，health）
+ * 它会出生，会死亡(hurt)
+ * 它的各项属性也应通过某种方法给外界得知（getAd，getHealth)
+ * 
+ */
+class Unit{
+     private int ad,health;/**ad为单位的攻击力，health为单位的生命值
+                            */
+     public Unit()
+     {
+    	 ad=0;
+    	 health=0;
+     }
+	public void setValue(int ad,int health) {
+		this.ad=ad;
+		this.health=health;
+		
+	}
+	public int getAd() {
+		return ad;
+	}
+	public int getHealth() {
+		return health;
+	}
+	public void hurt(int demage)
+	{
+		health-=demage;
+		
+	}
+	public void copy(Unit otherUnit)//用于改变角色位置时属性的复制
+	{
+		ad=otherUnit.ad;
+		health=otherUnit.health;
+		
+	}
+}
+/**
+ * Player类是玩家类
+ * 玩家一开始拥有一个英雄（unit【0】）
+ * 可以创建一个或多个随从（summon）
+ * 英雄死亡玩家也就输掉这场游戏（isDead）
+ * 随从可以攻击对方任何目标（attack）
+ * 
+ */
+class Player{
+	public Unit unit[];/**玩家类含多个角色对象
+	*/
+	
+	private int number;
+	private int magic;
+	public Player()
+	{
+		unit=new Unit[8];
+		int loop;
+		for(loop=0;loop<8;loop++)
+			unit[loop]=new Unit();
+		number=1;
+		unit[0].setValue(0, 30);
+		magic=0;
+	}
+	public void restore()
+	{
+		magic=100;
+	}
+	public void magic(int level)
+	{
+		magic-=level*15;
+	}
+	public int getMagic()
+	{
+		return magic;
+	}
+	public void attack(int positionAttacker,int positionDefender,int demage)
+	{
+		unit[positionAttacker].hurt(demage);
+		
+	}
+	public boolean isDead(int position)
+	{
+		if(unit[position].getHealth()<=0)
+			return true;
+		else return false;
+	}
+	public void remove(int position)
+	{
+		int loop;
+		if(position!=0)
+		{
+		for(loop=position;loop<number-1;loop++)
+			unit[loop].copy(unit[loop+1]);
+		number--;
+		}
+		
+	}
+	public void summon(int position,int ad,int health)
+	{
+		int loop;
+		for(loop=number-1;loop>=position;loop--)
+		   unit[loop+1].copy(unit[loop]);
+		unit[position].setValue(ad, health);
+		
+		number++;
+	}
+	public int getNumber()
+	{
+		return number;
+	}
+	public void show()
+	{
+		System.out.println(unit[0].getHealth());
+		int numberSoldier;
+		if(number==1)
+			numberSoldier=0;
+		else numberSoldier=number-1;
+		System.out.print(numberSoldier);
+		int loop;
+		for(loop=1;loop<=numberSoldier;loop++)
+			System.out.print(" "+unit[loop].getHealth());
+		System.out.println();
+		
+	}
+}
+/**
+ * 
+ * @author 徐朱东光
+ * 主类
+ * 控制游戏的进程
+ * 游戏开始与结束的地方
+ *
+ */
+public class Main {
+	/*
+	 * 判定游戏胜负
+	 */
+	public static boolean isWin(Player firstPlayer,Player secondPlayer)
+	{
+		if(firstPlayer.unit[0].getHealth()<=0)
+		  System.out.println("-1");
+		else if(secondPlayer.unit[0].getHealth()<=0)
+			System.out.println("1");
+		else  return false;
+		   
+		return true;
+	}
+	/*
+	 * 游戏进行中
+	 */
+	 public static void main(String[] args) {
+		 int t,position,ad,health,round=1;//t为操作次数
+		 boolean gameOver=false;
+		 String action;
+		 Player firstPlayer,secondPlayer;
+		 firstPlayer=new Player();
+		 secondPlayer=new Player();
+		 Scanner input=new Scanner(System.in);
+		 t=input.nextInt();
+		 while(t!=0)
+		 {
+			 action=input.next();
+			 Logger logger = Logger.getLogger(Main.class);
+			  
+		        BasicConfigurator.configure();
+		        logger.setLevel(Level.WARN);
+		        logger.info("输入的操作为："+action);//此时不会输出
+		        
+		        
+		        logger.debug("debug:");//暂时不会输出
+		       
+            /*
+             * 若一方英雄阵亡，自然接下来的操作都没有意义
+             */
+			 if(!gameOver)
+			 {
+				 logger.info("当前回合："+round);
+			 	if(round==1)
+			 {
+			 		
+			 		
+		
+			    if(action.equals("summon"))
+			    {
+			    	position=input.nextInt();
+			    	ad=input.nextInt();
+			    	health=input.nextInt();
+				 firstPlayer.summon(position, ad, health);
+			    }
+			    else if(action.equals("attack"))
+			    {
+			    	int positionAttacker,positionDefender;
+			    	positionAttacker=input.nextInt();
+			    	positionDefender=input.nextInt();
+			    	/*
+			    	 * 双方都会受到伤害，且可能会伴随角色的阵亡
+			    	 */
+			    	firstPlayer.attack(positionAttacker, positionDefender, secondPlayer.unit[positionDefender].getAd());
+			    	logger.info("攻击方角色生命值："+firstPlayer.unit[positionAttacker].getHealth());
+			    	
+			    	secondPlayer.attack(positionDefender, positionAttacker, firstPlayer.unit[positionAttacker].getAd());
+			    	logger.info("被攻击方角色生命值："+secondPlayer.unit[positionDefender].getHealth());
+			    	
+			    	if(firstPlayer.isDead(positionAttacker))
+			    		firstPlayer.remove(positionAttacker);
+			    	if(secondPlayer.isDead(positionDefender))
+			    		secondPlayer.remove(positionDefender);
+			    	
+			    }
+			    else if(action.equals("end"))
+			        {
+			    	round=2;//下一回合
+			    	firstPlayer.restore();
+			    	secondPlayer.restore();
+			        }
+			    else  logger.warn("输入操作信息错误");
+			    
+			 }
+			 else {
+				 if(action.equals("summon"))
+				    {
+				    	position=input.nextInt();
+				    	ad=input.nextInt();
+				    	health=input.nextInt();
+					 secondPlayer.summon(position, ad, health);
+				    }
+				    if(action.equals("attack"))
+				    {
+				    	int positionAttacker,positionDefender;
+				    	positionAttacker=input.nextInt();
+				    	positionDefender=input.nextInt();
+				    	/*
+				    	 * 双方都会受到伤害，且可能会伴随角色的阵亡
+				    	 */
+				    	firstPlayer.attack(positionDefender, positionAttacker, secondPlayer.unit[positionAttacker].getAd());
+				    	logger.info("被攻击方角色生命值："+firstPlayer.unit[positionDefender].getHealth());
+				    	
+				    	secondPlayer.attack( positionAttacker, positionDefender,firstPlayer.unit[positionDefender].getAd());
+				    	logger.info("攻击方角色生命值："+secondPlayer.unit[positionAttacker].getHealth());
+				    	
+				    	if(secondPlayer.isDead(positionAttacker))
+				    		secondPlayer.remove(positionAttacker);
+				    	if(firstPlayer.isDead(positionDefender))
+				    		firstPlayer.remove(positionDefender);
+				    }
+				    if(action.equals("end"))
+				        round=1;//下一回合
+				    
+				 }
+				 
+				 if(isWin(firstPlayer,secondPlayer))
+					 gameOver=true;
+			 }
+			 else logger.warn("接下来的操作没有意义");
+				 
+			 t--;
+			 
+		 }
+		 /*
+		  * 输出结果
+		  */
+		 if(!gameOver)
+			 System.out.println("0");
+		 firstPlayer.show();
+	       secondPlayer.show();
+	       
+	       input.close();
+	    }
+}
+
