@@ -47,7 +47,7 @@ public class Hero extends Unit{
 	public void buff()
 	{
 		if(blueBuff)
-			mp+=level*5;
+			mp+=level*50;
 		if(burn)
 			hp-=level*10;
 	}
@@ -55,7 +55,7 @@ public class Hero extends Unit{
 	{
 		exp++;
 		hp+=level*2;
-		mp+=level;
+		mp+=level*10;
 		buff();
 		levelup();
 	}
@@ -115,6 +115,26 @@ public class Hero extends Unit{
     	System.out.println("攻击力 "+ad);
     	System.out.println("护甲 "+def);
         System.out.println("等级 "+level);
+    }
+    public void killRewards(Hero hero)
+    {
+ 	   exp+=hero.level;
+ 	   def+=hero.def;
+    }
+    public void killRewards(Unit monster)
+    {
+ 	  if(monster.mark=='1')
+ 		  redBuff=true;
+ 	 if(monster.mark=='3')
+		  blueBuff=true;
+ 	if(monster.mark=='2')
+ 	{
+ 		ad+=200;
+ 		def+=100;
+ 		hp+=1000;
+ 		mp+=10000;
+ 	}
+ 	  
     }
     public boolean demage(int hurt,boolean debuff)
     {

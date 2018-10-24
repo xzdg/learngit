@@ -15,20 +15,30 @@ public class Map {
 				if(i==1||j==1||i==34||j==100)
 					map[i][j]='#';
 			}
-		for(i=31;i<=33;i++)
+		/*for(i=31;i<=33;i++)
 			map[i][5]='|';
 		for(j=2;j<=5;j++)
 			map[30][j]='-';
 		for(i=2;i<=4;i++)
 			map[i][96]='|';
 		for(j=96;j<=99;j++)
-			map[5][j]='-';
+			map[5][j]='-';*/
 		
 		for(i=8;i<=10;i++)
 			map[i][20]='#';
 		for(j=21;j<=22;j++)
 			map[10][j]='#';
 		map[9][21]='1';
+		for(i=11;i<=19;i++)
+			map[i][22]='#';
+		for(j=23;j<=51;j++)
+			map[19][j]='#';
+		for(i=14;i>=11;i--)
+			map[i][48]='#';
+		for(j=49;j<=80;j++)
+			map[11][j]='#';
+		for(i=12;i<=24;i++)
+			map[i][80]='#';
 		monster[0]=new Unit(1000+100*1,50, 2,9,21, '1', "À¶°Ö°Ö");
 		
 		for(i=25;i<=27;i++)
@@ -69,7 +79,7 @@ public class Map {
 		edg[2]=new Hero(500, 300, 60, 30, 3,98,0, 1, 'h', "×ôÒÁ");
 		
 		map[3][99]='i';
-		edg[3]=new Hero(500, 300, 60, 30,3,99, 0, 1, 'i', "¿¨É¯");
+		edg[3]=new Hero(500, 300, 616, 30,3,99, 0, 1, 'i', "¿¨É¯");
 		
 		map[4][98]='j';
 		edg[4]=new Hero(500, 300, 60, 30, 4,98,0, 1, 'j', "Âå");
@@ -78,6 +88,13 @@ public class Map {
 	}
      public void show()
      {
+    	 try {
+			  Thread.sleep(100);
+		  }
+		  catch(Exception e)
+		  {
+			  
+		  }
     	 int i,j;
     	 for(i=0;i<5;i++)
     	 {
@@ -125,21 +142,39 @@ public class Map {
     	 for(i=0;i<5;i++)
     		 if(attackRange(operationObject.posx,operationObject.posy,rng[i].posx,rng[i].posy))
     			 {
-    			 rng[i].demage(operationObject.ad,operationObject.redBuff);
+    			 if(rng[i].demage(operationObject.ad,operationObject.redBuff))
+    				 
+    				 
     			 
+    				 operationObject.killRewards(rng[i]);
+    			 map[rng[i].posx][rng[i].posy]=' ';
+    				 show();
+    				 show();
+    				 map[rng[i].posx][rng[i].posy]=rng[i].mark;
+    				 
     			 }
     	        
     	 for(i=0;i<5;i++)
     		 if(attackRange(operationObject.posx,operationObject.posy,edg[i].posx,edg[i].posy))
     		 { 
-    			 edg[i].demage(operationObject.ad,operationObject.redBuff);
-    	 
+    			 if(edg[i].demage(operationObject.ad,operationObject.redBuff))
+			
+				 operationObject.killRewards(edg[i]);
+    			 map[edg[i].posx][edg[i].posy]=' ';
+    			 show();
+    			 show();
+    			 map[edg[i].posx][edg[i].posy]=edg[i].mark;
 	         }
     	 for(i=0;i<3;i++)
     		 if(attackRange(operationObject.posx,operationObject.posy,monster[i].posx,monster[i].posy))
     			 {
-    			 monster[i].demage(operationObject.ad);
-    	 
+    			 if(monster[i].demage(operationObject.ad))
+				 operationObject.killRewards(monster[i]);
+			
+    			 map[monster[i].posx][monster[i].posy]=' ';
+    			 show();
+    			 show();
+    			 map[monster[i].posx][monster[i].posy]=monster[i].mark;
 	              }
     	 
      }

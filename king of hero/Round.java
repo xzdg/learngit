@@ -18,7 +18,13 @@ public class Round {
     		  flag=true;
     	  String operationObject=input.next();
     	  String behavior=input.next();
-    	  if(operationObject.equals("a")||operationObject.equals("A"))
+    	  if(operationObject.equals("1")||operationObject.equals("2"))
+    		  {
+    		  caylon.monster[0].state();
+    		  caylon.monster[1].state();
+    		  caylon.monster[2].state();
+    		  }
+    	  else if(operationObject.equals("a")||operationObject.equals("A"))
     		  action(caylon.rng[0],behavior);
     	  else if(operationObject.equals("b")||operationObject.equals("B"))
     		  action(caylon.rng[1],behavior);
@@ -104,13 +110,7 @@ public class Round {
       }
       public void show()
       {
-    	  try {
-			  Thread.sleep(100);
-		  }
-		  catch(Exception e)
-		  {
-			  
-		  }
+    	 
     	  caylon.show();
       }
       public void skillQ(Hero hero,int dx,int dy)
@@ -132,6 +132,8 @@ public class Round {
     			  caylon.map[posx][posy]='*';
     			  }
     		  else {
+    			  if(caylon.map[posx+dx][posy+dy]=='#')
+    				  caylon.map[posx+dx][posy+dy]=' ';
     			      for(i=0;i<5;i++)
     			    	  if(caylon.rng[i].posx==posx+dx&&caylon.rng[i].posy==posy+dy)
     			    		  hero.skillQ(caylon.rng[i]);

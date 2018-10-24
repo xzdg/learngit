@@ -19,7 +19,8 @@ public class Unit {
     	   this.hp=hp;
     	   this.ad=ad;
     	   this.def=def;
-    	   this.posx=posy;
+    	   this.posx=posx;
+    	   this.posy=posy;
     	   this.name=name;
     	   this.mark=mark;
        }
@@ -28,7 +29,8 @@ public class Unit {
     	   this.hp=hp;
     	   this.ad=ad;
     	   this.def=def;
-    	   this.posx=posy;
+    	   this.posx=posx;
+    	   this.posy=posy;
     	   this.name=name;
     	   this.mark=mark;
        }
@@ -53,6 +55,7 @@ public class Unit {
            
     	   return false;
        }
+       
        public void state()
        {
        	
